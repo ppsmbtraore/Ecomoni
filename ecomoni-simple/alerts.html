@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertes - EcoMonitoring</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">EcoMonitoring</div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            <nav id="mobile-nav">
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="map.html">Carte</a></li>
+                    <li><a href="new-sample.html">Nouvel Échantillon</a></li>
+                    <li><a href="alerts.html" class="active">Alertes</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="card">
+            <h1>⚠️ Gestion des Alertes</h1>
+            <p>Surveillez les dépassements de normes avec un système d'alertes coloré et des filtres personnalisés.</p>
+        </div>
+
+        <!-- Filtres des alertes -->
+        <div class="card">
+            <h2>🔍 Filtres des Alertes</h2>
+            <div class="filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-parametre">Paramètre :</label>
+                        <select id="filter-parametre" class="form-control" onchange="filtrerAlertes()">
+                            <option value="Tous">Tous les paramètres</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filter-gravite">Gravité :</label>
+                        <select id="filter-gravite" class="form-control" onchange="filtrerAlertes()">
+                            <option value="Toutes">Toutes les gravités</option>
+                            <option value="critique">🔴 Critique</option>
+                            <option value="avertissement">🟠 Avertissement</option>
+                            <option value="conforme">✅ Conforme</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filter-norme">Norme :</label>
+                        <select id="filter-norme" class="form-control" onchange="filtrerAlertes()">
+                            <option value="Toutes">Toutes les normes</option>
+                            <option value="OMS">OMS</option>
+                            <option value="AFC">AFC</option>
+                            <option value="Sénégal">Sénégal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <button onclick="reinitialiserFiltresAlertes()" class="btn btn-secondary">Réinitialiser</button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Export :</label>
+                        <button onclick="exporterAlertes('csv')" class="btn btn-small btn-success">📤 CSV</button>
+                        <button onclick="exporterAlertes('json')" class="btn btn-small btn-success">📤 JSON</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques des alertes -->
+        <div class="card">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-alertes">0</div>
+                    <div class="stat-label">Total Alertes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="alertes-critiques">0</div>
+                    <div class="stat-label">Critiques</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="alertes-avertissement">0</div>
+                    <div class="stat-label">Avertissements</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="alertes-conformes">0</div>
+                    <div class="stat-label">Conformes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions sur les alertes -->
+        <div class="card">
+            <h2>⚡ Actions</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                <button onclick="exporterAlertes('csv')" class="btn btn-success">Export CSV</button>
+                <button onclick="exporterAlertes('json')" class="btn btn-success">Export JSON</button>
+                <button onclick="marquerToutesCommeLues()" class="btn btn-warning">Marquer comme lues</button>
+                <button onclick="supprimerAlertesAnciennes()" class="btn btn-danger">Supprimer anciennes</button>
+            </div>
+        </div>
+
+        <!-- Tableau des alertes -->
+        <div class="card">
+            <h2>📋 Liste des Alertes</h2>
+            <div id="alertes-container">
+                <p>Chargement des alertes...</p>
+            </div>
+        </div>
+
+        <!-- Graphiques des alertes -->
+        <div class="card">
+            <h2>📊 Analyse des Alertes</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div>
+                    <h3>Par Gravité</h3>
+                    <div id="chart-gravite"></div>
+                </div>
+                <div>
+                    <h3>Par Paramètre</h3>
+                    <div id="chart-parametre"></div>
+                </div>
+                <div>
+                    <h3>Par Norme</h3>
+                    <div id="chart-norme"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 EcoMonitoring - Surveillance Environnementale. Tous droits réservés.</p>
+    </footer>
+
+    <script src="standards.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let alertesFiltrees = [];
+
+        // Initialiser la page au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            initialiserFiltres();
+            chargerAlertes();
+            initialiserMenuMobile();
+        });
+
+        // Fonction pour le menu mobile
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mobile-nav');
+            nav.classList.toggle('active');
+        }
+
+        function initialiserMenuMobile() {
+            const navLinks = document.querySelectorAll('#mobile-nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const nav = document.getElementById('mobile-nav');
+                    nav.classList.remove('active');
+                });
+            });
+        }
+
+        function initialiserFiltres() {
+            // Charger les paramètres disponibles
+            const parametres = [...new Set(STANDARDS.map(s => s.parametre))];
+            const parametreSelect = document.getElementById('filter-parametre');
+            
+            parametres.forEach(parametre => {
+                const option = document.createElement('option');
+                option.value = parametre;
+                option.textContent = parametre;
+                parametreSelect.appendChild(option);
+            });
+        }
+
+        function chargerAlertes() {
+            const parametre = document.getElementById('filter-parametre').value;
+            const gravite = document.getElementById('filter-gravite').value;
+            const norme = document.getElementById('filter-norme').value;
+            
+            alertesFiltrees = filtrerAlertes(parametre, gravite, norme);
+            afficherAlertes();
+            mettreAJourStatistiques();
+            genererGraphiques();
+        }
+
+        function afficherAlertes() {
+            const container = document.getElementById('alertes-container');
+            
+            if (alertesFiltrees.length === 0) {
+                container.innerHTML = '<p>Aucune alerte trouvée avec les filtres actuels.</p>';
+                return;
+            }
+            
+            let html = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paramètre</th>
+                                <th>Valeur</th>
+                                <th>Norme</th>
+                                <th>Seuil</th>
+                                <th>Gravité</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            alertesFiltrees.forEach(alerte => {
+                const icone = obtenirIconeGravite(alerte.gravite);
+                const classe = alerte.gravite;
+                const ratio = (parseFloat(alerte.valeur) / parseFloat(alerte.seuil)).toFixed(2);
+                
+                html += `
+                    <tr class="${classe}">
+                        <td>${alerte.parametre}</td>
+                        <td>${alerte.valeur} ${alerte.unite}</td>
+                        <td>${alerte.norme}</td>
+                        <td>${alerte.seuil} ${alerte.unite}</td>
+                        <td>
+                            <span class="gravite ${classe}">
+                                ${icone} ${alerte.gravite} (${ratio}x)
+                            </span>
+                        </td>
+                        <td>${formaterDate(alerte.date)}</td>
+                        <td>
+                            <button onclick="voirDetails('${alerte.id}')" class="btn btn-small">Détails</button>
+                            <button onclick="localiserAlerte('${alerte.id}')" class="btn btn-small btn-secondary">Localiser</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function mettreAJourStatistiques() {
+            const totalAlertes = alertesFiltrees.length;
+            const critiques = alertesFiltrees.filter(a => a.gravite === 'critique').length;
+            const avertissements = alertesFiltrees.filter(a => a.gravite === 'avertissement').length;
+            const conformes = alertesFiltrees.filter(a => a.gravite === 'conforme').length;
+            
+            document.getElementById('total-alertes').textContent = totalAlertes;
+            document.getElementById('alertes-critiques').textContent = critiques;
+            document.getElementById('alertes-avertissement').textContent = avertissements;
+            document.getElementById('alertes-conformes').textContent = conformes;
+        }
+
+        function genererGraphiques() {
+            // Graphique par gravité
+            genererGraphiqueGravite();
+            genererGraphiqueParametre();
+            genererGraphiqueNorme();
+        }
+
+        function genererGraphiqueGravite() {
+            const gravites = ['critique', 'avertissement', 'conforme'];
+            const donnees = gravites.map(g => ({
+                gravite: g,
+                count: alertesFiltrees.filter(a => a.gravite === g).length
+            }));
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            donnees.forEach(d => {
+                const pourcentage = alertesFiltrees.length > 0 ? (d.count / alertesFiltrees.length * 100).toFixed(1) : 0;
+                const couleur = obtenirCouleurGravite(d.gravite);
+                const icone = obtenirIconeGravite(d.gravite);
+                
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: ${couleur}20; border-radius: 5px;">
+                        <span>${icone} ${d.gravite}</span>
+                        <span><strong>${d.count}</strong> (${pourcentage}%)</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            document.getElementById('chart-gravite').innerHTML = html;
+        }
+
+        function genererGraphiqueParametre() {
+            const parametres = [...new Set(alertesFiltrees.map(a => a.parametre))];
+            const donnees = parametres.map(p => ({
+                parametre: p,
+                count: alertesFiltrees.filter(a => a.parametre === p).length
+            })).sort((a, b) => b.count - a.count).slice(0, 10);
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            donnees.forEach(d => {
+                const pourcentage = alertesFiltrees.length > 0 ? (d.count / alertesFiltrees.length * 100).toFixed(1) : 0;
+                
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8f9fa; border-radius: 5px;">
+                        <span>${d.parametre}</span>
+                        <span><strong>${d.count}</strong> (${pourcentage}%)</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            document.getElementById('chart-parametre').innerHTML = html;
+        }
+
+        function genererGraphiqueNorme() {
+            const normes = ['OMS', 'AFC', 'Sénégal'];
+            const donnees = normes.map(n => ({
+                norme: n,
+                count: alertesFiltrees.filter(a => a.norme === n).length
+            }));
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            donnees.forEach(d => {
+                const pourcentage = alertesFiltrees.length > 0 ? (d.count / alertesFiltrees.length * 100).toFixed(1) : 0;
+                const couleur = d.norme === 'OMS' ? '#1e3c72' : d.norme === 'AFC' ? '#28a745' : '#ffc107';
+                
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: ${couleur}20; border-radius: 5px;">
+                        <span style="color: ${couleur}; font-weight: bold;">${d.norme}</span>
+                        <span><strong>${d.count}</strong> (${pourcentage}%)</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            document.getElementById('chart-norme').innerHTML = html;
+        }
+
+        function reinitialiserFiltresAlertes() {
+            document.getElementById('filter-parametre').value = 'Tous';
+            document.getElementById('filter-gravite').value = 'Toutes';
+            document.getElementById('filter-norme').value = 'Toutes';
+            chargerAlertes();
+        }
+
+        function voirDetails(alerteId) {
+            const alerte = alertesFiltrees.find(a => a.id === alerteId);
+            if (!alerte) return;
+            
+            const details = `
+                <h3>Détails de l'Alerte</h3>
+                <p><strong>Paramètre:</strong> ${alerte.parametre}</p>
+                <p><strong>Valeur mesurée:</strong> ${alerte.valeur} ${alerte.unite}</p>
+                <p><strong>Norme:</strong> ${alerte.norme}</p>
+                <p><strong>Seuil:</strong> ${alerte.seuil} ${alerte.unite}</p>
+                <p><strong>Gravité:</strong> ${obtenirIconeGravite(alerte.gravite)} ${alerte.gravite}</p>
+                <p><strong>Ratio:</strong> ${(parseFloat(alerte.valeur) / parseFloat(alerte.seuil)).toFixed(2)}x</p>
+                <p><strong>Date:</strong> ${formaterDate(alerte.date)}</p>
+                <p><strong>Coordonnées:</strong> ${alerte.latitude}, ${alerte.longitude}</p>
+            `;
+            
+            alert(details);
+        }
+
+        function localiserAlerte(alerteId) {
+            const alerte = alertesFiltrees.find(a => a.id === alerteId);
+            if (!alerte) return;
+            
+            // Ouvrir la page carte avec un paramètre pour centrer sur cette alerte
+            window.open(`map.html?center=${alerte.latitude},${alerte.longitude}`, '_blank');
+        }
+
+        function marquerToutesCommeLues() {
+            if (confirm('Marquer toutes les alertes comme lues ?')) {
+                // Ici on pourrait ajouter une propriété "lue" aux alertes
+                alert('Fonctionnalité à implémenter');
+            }
+        }
+
+        function supprimerAlertesAnciennes() {
+            if (confirm('Supprimer les alertes de plus de 30 jours ?')) {
+                const dateLimite = new Date();
+                dateLimite.setDate(dateLimite.getDate() - 30);
+                
+                let toutesAlertes = chargerAlertes();
+                const alertesRecentes = toutesAlertes.filter(a => new Date(a.date) > dateLimite);
+                
+                localStorage.setItem('ecomoni_alertes', JSON.stringify(alertesRecentes));
+                
+                alert(`${toutesAlertes.length - alertesRecentes.length} alertes anciennes supprimées.`);
+                chargerAlertes();
+            }
+        }
+
+        // Fonction pour filtrer les alertes (utilise la fonction du script.js)
+        function filtrerAlertes() {
+            chargerAlertes();
+        }
+    </script>
+</body>
+</html>

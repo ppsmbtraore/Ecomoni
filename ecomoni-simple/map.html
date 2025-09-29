@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte - EcoMonitoring</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">EcoMonitoring</div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            <nav id="mobile-nav">
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="map.html" class="active">Carte</a></li>
+                    <li><a href="new-sample.html">Nouvel Échantillon</a></li>
+                    <li><a href="alerts.html">Alertes</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="card">
+            <h1>🗺️ Carte Interactive des Échantillons</h1>
+            <p>Visualisez tous vos échantillons environnementaux sur la carte avec des filtres avancés.</p>
+        </div>
+
+        <!-- Filtres -->
+        <div class="card">
+            <h2>🔍 Filtres</h2>
+            <div class="filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-type">Type de mesure :</label>
+                        <select id="filter-type" class="form-control" onchange="mettreAJourFiltres()">
+                            <option value="Tous">Tous les types</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filter-parametre">Paramètre :</label>
+                        <select id="filter-parametre" class="form-control" onchange="mettreAJourFiltres()">
+                            <option value="Tous">Tous les paramètres</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filter-date-debut">Date de début :</label>
+                        <input type="date" id="filter-date-debut" class="form-control" onchange="mettreAJourFiltres()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filter-date-fin">Date de fin :</label>
+                        <input type="date" id="filter-date-fin" class="form-control" onchange="mettreAJourFiltres()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <button onclick="reinitialiserFiltres()" class="btn btn-secondary">Réinitialiser</button>
+                        <button onclick="afficherCarte()" class="btn btn-success">🔄 Actualiser</button>
+                        <button onclick="debugCarte()" class="btn btn-warning">🐛 Debug</button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Export :</label>
+                        <button onclick="exporterEchantillons('csv')" class="btn btn-small btn-success">📤 CSV</button>
+                        <button onclick="exporterEchantillons('json')" class="btn btn-small btn-success">📤 JSON</button>
+                        <button onclick="exporterEchantillons('excel')" class="btn btn-small btn-success">📊 Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques des filtres -->
+        <div class="card">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-marqueurs">0</div>
+                    <div class="stat-label">Marqueurs affichés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="alertes-critiques">0</div>
+                    <div class="stat-label">Alertes critiques</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="zones-couvertes">0</div>
+                    <div class="stat-label">Zones couvertes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="derniere-mesure">-</div>
+                    <div class="stat-label">Dernière mesure</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte -->
+        <div class="card">
+            <h2>📍 Localisation des Échantillons</h2>
+            <div id="map"></div>
+        </div>
+
+        <!-- Légende -->
+        <div class="card">
+            <h2>🎨 Légende</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="legend-item">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 20px; height: 20px; background: #28a745; border-radius: 50%;"></div>
+                        <span>✅ Conforme</span>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 20px; height: 20px; background: #ffc107; border-radius: 50%;"></div>
+                        <span>🟠 Avertissement</span>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 20px; height: 20px; background: #dc3545; border-radius: 50%;"></div>
+                        <span>🔴 Critique</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 EcoMonitoring - Surveillance Environnementale. Tous droits réservés.</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="standards.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let currentFilteredSamples = [];
+
+        // Initialiser la carte au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initialisation de la carte...');
+            initialiserCarte();
+            chargerFiltres();
+            
+            // Attendre un peu pour que la carte soit prête
+            setTimeout(() => {
+                afficherCarte();
+            }, 1000);
+            
+            // Initialiser le menu mobile
+            initialiserMenuMobile();
+        });
+
+        // Fonction pour le menu mobile
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mobile-nav');
+            nav.classList.toggle('active');
+        }
+
+        function initialiserMenuMobile() {
+            const navLinks = document.querySelectorAll('#mobile-nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const nav = document.getElementById('mobile-nav');
+                    nav.classList.remove('active');
+                });
+            });
+        }
+
+        function afficherCarte() {
+            console.log('AfficherCarte appelée depuis map.html');
+            
+            // Vérifier que la carte est initialisée
+            if (!mapInstance) {
+                console.log('Carte non initialisée, initialisation...');
+                initialiserCarte();
+            }
+            
+            // Effacer les marqueurs existants
+            mapMarkers.forEach(marker => mapInstance.removeLayer(marker));
+            mapMarkers = [];
+
+            // Obtenir les échantillons filtrés
+            const type = document.getElementById('filter-type').value;
+            const parametre = document.getElementById('filter-parametre').value;
+            const dateDebut = document.getElementById('filter-date-debut').value;
+            const dateFin = document.getElementById('filter-date-fin').value;
+            
+            const dateRange = dateDebut && dateFin ? { debut: dateDebut, fin: dateFin } : null;
+            currentFilteredSamples = filtrerEchantillons(type, parametre, dateRange);
+            
+            console.log('Échantillons filtrés:', currentFilteredSamples.length);
+
+            // Afficher les échantillons sur la carte
+            currentFilteredSamples.forEach(echantillon => {
+                const marker = creerMarqueur(echantillon);
+                marker.addTo(mapInstance);
+                mapMarkers.push(marker);
+            });
+
+            console.log('Marqueurs créés:', mapMarkers.length);
+
+            // Mettre à jour les statistiques
+            mettreAJourStatistiques();
+
+            // Ajuster la vue pour inclure tous les marqueurs
+            if (mapMarkers.length > 0) {
+                const groupe = L.featureGroup(mapMarkers);
+                mapInstance.fitBounds(groupe.getBounds().pad(0.1));
+            } else {
+                // Si aucun marqueur, centrer sur Dakar
+                mapInstance.setView([14.6928, -17.4467], 10);
+            }
+        }
+
+        function creerPopupEchantillon(echantillon) {
+            const resultats = comparerAuxNormes(echantillon);
+            const alertes = chargerAlertes().filter(a => a.echantillonId === echantillon.id);
+            
+            let html = `
+                <div style="min-width: 250px; font-family: Arial, sans-serif;">
+                    <h3 style="margin: 0 0 10px 0; color: #1e3c72;">${echantillon.parametre}</h3>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Valeur:</strong> ${echantillon.valeur} ${echantillon.unite}<br>
+                        <strong>Type:</strong> ${echantillon.type}<br>
+                        <strong>Date:</strong> ${formaterDate(echantillon.date)}
+                    </div>
+            `;
+            
+            if (alertes.length > 0) {
+                html += '<div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 10px 0;">';
+                html += '<h4 style="margin: 0 0 10px 0; color: #dc3545;">⚠️ Alertes:</h4>';
+                alertes.forEach(alerte => {
+                    const icone = obtenirIconeGravite(alerte.gravite);
+                    html += `<div style="margin: 5px 0;">
+                        ${icone} <strong>${alerte.norme}:</strong> ${alerte.valeur} > ${alerte.seuil} ${alerte.unite}
+                        <span style="color: ${obtenirCouleurGravite(alerte.gravite)}; font-weight: bold;">(${alerte.gravite})</span>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+            
+            if (!resultats.error) {
+                html += '<div style="background: #e9ecef; padding: 10px; border-radius: 5px;">';
+                html += '<h4 style="margin: 0 0 10px 0; color: #495057;">Comparaison aux normes:</h4>';
+                Object.keys(resultats).forEach(norme => {
+                    const resultat = resultats[norme];
+                    const statut = resultat.depassement ? '🔴 Dépassement' : '✅ Conforme';
+                    const couleur = resultat.depassement ? '#dc3545' : '#28a745';
+                    html += `<div style="margin: 3px 0; color: ${couleur};">
+                        <strong>${norme}:</strong> ${statut} (${resultat.seuil} ${echantillon.unite})
+                    </div>`;
+                });
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function mettreAJourStatistiques() {
+            const totalMarqueurs = document.getElementById('total-marqueurs');
+            const alertesCritiques = document.getElementById('alertes-critiques');
+            const zonesCouvertes = document.getElementById('zones-couvertes');
+            const derniereMesure = document.getElementById('derniere-mesure');
+            
+            if (totalMarqueurs) totalMarqueurs.textContent = mapMarkers.length;
+            
+            const alertesCritiquesCount = chargerAlertes().filter(a => 
+                a.gravite === 'critique' && 
+                currentFilteredSamples.some(s => s.id === a.echantillonId)
+            ).length;
+            if (alertesCritiques) alertesCritiques.textContent = alertesCritiquesCount;
+            
+            // Compter les zones uniques
+            const zones = new Set(currentFilteredSamples.map(e => 
+                `${e.latitude.toFixed(2)},${e.longitude.toFixed(2)}`
+            ));
+            if (zonesCouvertes) zonesCouvertes.textContent = zones.size;
+            
+            // Dernière mesure
+            if (currentFilteredSamples.length > 0 && derniereMesure) {
+                const derniere = currentFilteredSamples
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                const jours = Math.floor((new Date() - new Date(derniere.date)) / (1000 * 60 * 60 * 24));
+                derniereMesure.textContent = `${jours}j`;
+            } else if (derniereMesure) {
+                derniereMesure.textContent = '-';
+            }
+        }
+    </script>
+
+    <style>
+        .custom-marker {
+            background: transparent !important;
+            border: none !important;
+        }
+        
+        .custom-marker div {
+            transition: all 0.3s ease;
+        }
+        
+        .custom-marker:hover div {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        .legend-item {
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .legend-item:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Styles pour les popups */
+        .custom-popup .leaflet-popup-content-wrapper {
+            border-radius: 10px !important;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+            padding: 0 !important;
+        }
+        
+        .custom-popup .leaflet-popup-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .custom-popup .leaflet-popup-tip {
+            background: white !important;
+        }
+        
+        /* Amélioration des filtres */
+        .filter-group {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-group:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Amélioration des cartes de statistiques */
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        /* Animation pour les boutons */
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</body>
+</html>

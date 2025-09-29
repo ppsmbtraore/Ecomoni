@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMoni - Monitoring Environnemental des Zones Minières</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">EcoMonitoring</div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            <nav id="mobile-nav">
+                <ul>
+                    <li><a href="index.html" class="active">Accueil</a></li>
+                    <li><a href="map.html">Carte</a></li>
+                    <li><a href="new-sample.html">Nouvel Échantillon</a></li>
+                    <li><a href="alerts.html">Alertes</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="card fade-in">
+            <h1>🌍 EcoMonitoring – Surveillance Environnementale</h1>
+            <p class="intro-text">
+                Bienvenue sur EcoMonitoring, votre plateforme complète de surveillance environnementale. 
+                Notre système vous permet de suivre en temps réel la qualité de l'eau, de l'air, du sol, 
+                la gestion des déchets et les niveaux de bruit selon les normes internationales (OMS, AFC) et nationales. 
+                Idéal pour les industries, les collectivités, les projets de développement et toute activité nécessitant un suivi environnemental rigoureux.
+            </p>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-echantillons">0</div>
+                <div class="stat-label">Échantillons</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-alertes">0</div>
+                <div class="stat-label">Alertes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="alertes-critiques">0</div>
+                <div class="stat-label">Critiques</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="zones-surveillees">0</div>
+                <div class="stat-label">Zones</div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités principales -->
+        <div class="card">
+            <h2>🚀 Fonctionnalités Principales</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                <div class="feature-card">
+                    <h3>🗺️ Carte Interactive</h3>
+                    <p>Visualisez tous vos échantillons sur une carte interactive avec filtres avancés par type, paramètre, libellé et période.</p>
+                    <a href="map.html" class="btn">Voir la carte</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📊 Nouvel Échantillon</h3>
+                    <p>Enregistrez facilement de nouveaux échantillons avec libellé personnalisé, géolocalisation et comparaison automatique aux normes.</p>
+                    <a href="new-sample.html" class="btn">Ajouter un échantillon</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>⚠️ Gestion des Alertes</h3>
+                    <p>Surveillez les dépassements de normes avec un système d'alertes coloré et des filtres personnalisés.</p>
+                    <a href="alerts.html" class="btn">Voir les alertes</a>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📈 Export/Import</h3>
+                    <p>Exportez vos données en CSV ou JSON, ou importez des fichiers existants pour une analyse approfondie.</p>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="exporterEchantillons('csv')" class="btn btn-small">Export CSV</button>
+                        <button onclick="exporterEchantillons('json')" class="btn btn-small">Export JSON</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Types de surveillance -->
+        <div class="card">
+            <h2>🔬 Types de Surveillance</h2>
+            <p style="margin-bottom: 2rem; color: #6c757d;">
+                EcoMonitoring couvre tous les aspects de la surveillance environnementale pour différents secteurs d'activité.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div class="type-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">💧</div>
+                    <h3>Eau</h3>
+                    <p>Qualité de l'eau potable, eaux usées, eaux souterraines. Paramètres : Arsenic, Mercure, Cyanures, Plomb, Cadmium, Chrome, Nickel, Zinc</p>
+                </div>
+                
+                <div class="type-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🌬️</div>
+                    <h3>Air</h3>
+                    <p>Qualité de l'air ambiant et industriel. Paramètres : PM2.5, PM10, SO2, NO2, CO, O3</p>
+                </div>
+                
+                <div class="type-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🌍</div>
+                    <h3>Sol</h3>
+                    <p>Contamination des sols et sédiments. Paramètres : Métaux lourds, Arsenic, Mercure, Chrome, Nickel</p>
+                </div>
+                
+                <div class="type-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">♻️</div>
+                    <h3>Déchets</h3>
+                    <p>Gestion et traitement des déchets. Paramètres : Hydrocarbures, Métaux lourds, PCB</p>
+                </div>
+                
+                <div class="type-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🔊</div>
+                    <h3>Bruit</h3>
+                    <p>Surveillance acoustique environnementale. Zones : Résidentiel (jour/nuit), Industriel, Commercial</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Normes de référence -->
+        <div class="card">
+            <h2>📋 Normes de Référence</h2>
+            <p>EcoMonitoring compare automatiquement vos mesures aux normes internationales et nationales :</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                <div class="norme-card">
+                    <h4>🌍 OMS</h4>
+                    <p>Organisation Mondiale de la Santé</p>
+                </div>
+                <div class="norme-card">
+                    <h4>🌍 AFC</h4>
+                    <p>Standards Africains</p>
+                </div>
+                <div class="norme-card">
+                    <h4>🇸🇳 Sénégal</h4>
+                    <p>Normes Nationales</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toutes les mesures -->
+        <div class="card">
+            <h2>📊 Toutes les Mesures</h2>
+            
+            <!-- Filtres -->
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="margin-bottom: 1rem; color: #1e3c72;">🔍 Filtres</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label for="filter-type-home">Type :</label>
+                        <select id="filter-type-home" class="form-control" onchange="filtrerMesures()">
+                            <option value="Tous">Tous les types</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filter-parametre-home">Paramètre :</label>
+                        <select id="filter-parametre-home" class="form-control" onchange="filtrerMesures()">
+                            <option value="Tous">Tous les paramètres</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filter-libelle-home">Libellé :</label>
+                        <input type="text" id="filter-libelle-home" class="form-control" placeholder="Rechercher par libellé..." onkeyup="filtrerMesures()">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <div>
+                            <button onclick="reinitialiserFiltresHome()" class="btn btn-small btn-secondary">Réinitialiser</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <button onclick="chargerToutesMesures()" class="btn btn-small">🔄 Actualiser</button>
+                <button onclick="exporterEchantillons('csv')" class="btn btn-small btn-success">📤 Export CSV</button>
+                <button onclick="exporterEchantillons('json')" class="btn btn-small btn-success">📤 Export JSON</button>
+                <button onclick="exporterEchantillons('excel')" class="btn btn-small btn-success">📊 Export Excel</button>
+                <button onclick="ouvrirImportModal()" class="btn btn-small btn-warning">📥 Import</button>
+            </div>
+            <div id="toutes-mesures">
+                <p>Chargement des mesures...</p>
+            </div>
+        </div>
+
+        <!-- Dernières alertes -->
+        <div class="card">
+            <h2>⚠️ Dernières Alertes</h2>
+            <div id="dernieres-alertes">
+                <p>Chargement des alertes...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal d'import -->
+    <div id="importModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📥 Importer des Mesures</h3>
+                <button onclick="fermerImportModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="import-options">
+                    <div class="import-option">
+                        <h4>📄 Fichier CSV</h4>
+                        <p>Importez un fichier CSV avec les colonnes : parametre, valeur, unite, type, libelle, latitude, longitude</p>
+                        <input type="file" id="csvFile" accept=".csv" onchange="importerCSV(this)">
+                        <div class="file-info" id="csvInfo"></div>
+                    </div>
+                    
+                    <div class="import-option">
+                        <h4>📄 Fichier JSON</h4>
+                        <p>Importez un fichier JSON avec un tableau d'échantillons</p>
+                        <input type="file" id="jsonFile" accept=".json" onchange="importerJSON(this)">
+                        <div class="file-info" id="jsonInfo"></div>
+                    </div>
+                    
+                    <div class="import-option">
+                        <h4>📋 Coller du JSON</h4>
+                        <p>Collez directement du JSON dans le champ ci-dessous</p>
+                        <textarea id="jsonText" placeholder='[{"parametre": "Arsenic", "valeur": "0.01", "unite": "mg/L", "type": "Eau", "libelle": "Station test", "latitude": 14.6928, "longitude": -17.4467}]' rows="6"></textarea>
+                        <button onclick="importerJSONText()" class="btn btn-small">Importer</button>
+                    </div>
+                </div>
+                
+                <div id="importResults" class="import-results" style="display: none;">
+                    <h4>Résultats de l'import</h4>
+                    <div id="importStats"></div>
+                    <div id="importErrors"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 EcoMonitoring - Surveillance Environnementale. Tous droits réservés.</p>
+    </footer>
+
+    <script src="standards.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Charger les statistiques au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            chargerStatistiques();
+            chargerDernieresAlertes();
+            chargerToutesMesures();
+            initialiserFiltresHome();
+        });
+
+        // Fonction pour le menu mobile
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mobile-nav');
+            nav.classList.toggle('active');
+        }
+
+        // Fermer le menu mobile quand on clique sur un lien
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('#mobile-nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const nav = document.getElementById('mobile-nav');
+                    nav.classList.remove('active');
+                });
+            });
+        });
+
+        function chargerStatistiques() {
+            const echantillons = chargerEchantillons();
+            const alertes = chargerAlertes();
+            
+            document.getElementById('total-echantillons').textContent = echantillons.length;
+            document.getElementById('total-alertes').textContent = alertes.length;
+            document.getElementById('alertes-critiques').textContent = alertes.filter(a => a.gravite === 'critique').length;
+            
+            // Compter les zones uniques
+            const zones = new Set(echantillons.map(e => `${e.latitude.toFixed(2)},${e.longitude.toFixed(2)}`));
+            document.getElementById('zones-surveillees').textContent = zones.size;
+        }
+
+        function chargerDernieresAlertes() {
+            const alertes = chargerAlertes()
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            const container = document.getElementById('dernieres-alertes');
+            
+            if (alertes.length === 0) {
+                container.innerHTML = '<p>Aucune alerte récente.</p>';
+                return;
+            }
+            
+            let html = '<div class="table-container"><table><thead><tr><th>Paramètre</th><th>Valeur</th><th>Norme</th><th>Gravité</th><th>Date</th></tr></thead><tbody>';
+            
+            alertes.forEach(alerte => {
+                const icone = obtenirIconeGravite(alerte.gravite);
+                const classe = alerte.gravite;
+                html += `
+                    <tr class="${classe}">
+                        <td>${alerte.parametre}</td>
+                        <td>${alerte.valeur} ${alerte.unite}</td>
+                        <td>${alerte.norme}</td>
+                        <td><span class="gravite ${classe}">${icone} ${alerte.gravite}</span></td>
+                        <td>${formaterDate(alerte.date)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function chargerToutesMesures() {
+            const echantillons = chargerEchantillons()
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const container = document.getElementById('toutes-mesures');
+            
+            if (echantillons.length === 0) {
+                container.innerHTML = '<p>Aucune mesure enregistrée. <a href="new-sample.html">Ajoutez votre premier échantillon</a>.</p>';
+                return;
+            }
+            
+            let html = `
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #e9ecef; border-radius: 5px;">
+                    <strong>Total :</strong> ${echantillons.length} mesures | 
+                    <strong>Dernière mise à jour :</strong> ${new Date().toLocaleString('fr-FR')}
+                </div>
+                <div class="table-container table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paramètre</th>
+                                <th>Valeur</th>
+                                <th>Type</th>
+                                <th>Libellé</th>
+                                <th>Date</th>
+                                <th>Localisation</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            echantillons.forEach(echantillon => {
+                const alertes = chargerAlertes().filter(a => a.echantillonId === echantillon.id);
+                let statut = '✅ Conforme';
+                let classe = 'conforme';
+                
+                if (alertes.length > 0) {
+                    const gravites = alertes.map(a => a.gravite);
+                    if (gravites.includes('critique')) {
+                        statut = '🔴 Critique';
+                        classe = 'critique';
+                    } else if (gravites.includes('avertissement')) {
+                        statut = '🟠 Avertissement';
+                        classe = 'avertissement';
+                    }
+                }
+                
+                html += `
+                    <tr class="${classe}">
+                        <td><strong>${echantillon.parametre}</strong></td>
+                        <td>${echantillon.valeur} ${echantillon.unite}</td>
+                        <td class="hide-mobile">${echantillon.type}</td>
+                        <td>${echantillon.libelle || 'Non spécifié'}</td>
+                        <td class="hide-mobile">${formaterDate(echantillon.date)}</td>
+                        <td class="hide-mobile">
+                            <small>
+                                ${echantillon.latitude.toFixed(4)}, ${echantillon.longitude.toFixed(4)}
+                            </small>
+                        </td>
+                        <td><span class="gravite ${classe}">${statut}</span></td>
+                        <td>
+                            <button onclick="voirDetails('${echantillon.id}')" class="btn btn-small">👁️ Voir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function initialiserFiltresHome() {
+            // Charger les types disponibles
+            const types = getAllTypes();
+            const typeSelect = document.getElementById('filter-type-home');
+            
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeSelect.appendChild(option);
+            });
+
+            // Charger les paramètres disponibles
+            const parametres = STANDARDS.map(s => s.parametre);
+            const parametreSelect = document.getElementById('filter-parametre-home');
+            
+            parametres.forEach(parametre => {
+                const option = document.createElement('option');
+                option.value = parametre;
+                option.textContent = parametre;
+                parametreSelect.appendChild(option);
+            });
+        }
+
+        function filtrerMesures() {
+            const type = document.getElementById('filter-type-home').value;
+            const parametre = document.getElementById('filter-parametre-home').value;
+            const libelle = document.getElementById('filter-libelle-home').value;
+            
+            let echantillons = chargerEchantillons();
+            
+            // Appliquer les filtres
+            if (type && type !== 'Tous') {
+                echantillons = echantillons.filter(e => e.type === type);
+            }
+            
+            if (parametre && parametre !== 'Tous') {
+                echantillons = echantillons.filter(e => e.parametre === parametre);
+            }
+            
+            if (libelle && libelle.trim() !== '') {
+                echantillons = echantillons.filter(e => 
+                    e.libelle && e.libelle.toLowerCase().includes(libelle.toLowerCase())
+                );
+            }
+            
+            // Trier par date
+            echantillons = echantillons.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Afficher les résultats filtrés
+            afficherMesuresFiltrees(echantillons);
+        }
+
+        function afficherMesuresFiltrees(echantillons) {
+            const container = document.getElementById('toutes-mesures');
+            
+            if (echantillons.length === 0) {
+                container.innerHTML = '<p>Aucune mesure ne correspond aux critères de filtrage.</p>';
+                return;
+            }
+            
+            let html = `
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #e9ecef; border-radius: 5px;">
+                    <strong>Résultats :</strong> ${echantillons.length} mesure(s) trouvée(s) | 
+                    <strong>Dernière mise à jour :</strong> ${new Date().toLocaleString('fr-FR')}
+                </div>
+                <div class="table-container table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paramètre</th>
+                                <th>Valeur</th>
+                                <th>Type</th>
+                                <th>Libellé</th>
+                                <th>Date</th>
+                                <th>Localisation</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            echantillons.forEach(echantillon => {
+                const alertes = chargerAlertes().filter(a => a.echantillonId === echantillon.id);
+                let statut = '✅ Conforme';
+                let classe = 'conforme';
+                
+                if (alertes.length > 0) {
+                    const gravites = alertes.map(a => a.gravite);
+                    if (gravites.includes('critique')) {
+                        statut = '🔴 Critique';
+                        classe = 'critique';
+                    } else if (gravites.includes('avertissement')) {
+                        statut = '🟠 Avertissement';
+                        classe = 'avertissement';
+                    }
+                }
+                
+                html += `
+                    <tr class="${classe}">
+                        <td><strong>${echantillon.parametre}</strong></td>
+                        <td>${echantillon.valeur} ${echantillon.unite}</td>
+                        <td class="hide-mobile">${echantillon.type}</td>
+                        <td>${echantillon.libelle || 'Non spécifié'}</td>
+                        <td class="hide-mobile">${formaterDate(echantillon.date)}</td>
+                        <td class="hide-mobile">
+                            <small>
+                                ${echantillon.latitude.toFixed(4)}, ${echantillon.longitude.toFixed(4)}
+                            </small>
+                        </td>
+                        <td><span class="gravite ${classe}">${statut}</span></td>
+                        <td>
+                            <button onclick="voirDetails('${echantillon.id}')" class="btn btn-small">👁️ Voir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function reinitialiserFiltresHome() {
+            document.getElementById('filter-type-home').value = 'Tous';
+            document.getElementById('filter-parametre-home').value = 'Tous';
+            document.getElementById('filter-libelle-home').value = '';
+            chargerToutesMesures();
+        }
+
+        function voirDetails(echantillonId) {
+            const echantillon = chargerEchantillons().find(e => e.id === echantillonId);
+            if (!echantillon) return;
+            
+            const resultats = comparerAuxNormes(echantillon);
+            const alertes = chargerAlertes().filter(a => a.echantillonId === echantillonId);
+            
+            let details = `
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 500px; margin: 20px auto;">
+                    <h3 style="color: #1e3c72; margin-bottom: 15px;">📊 Détails de la mesure</h3>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Paramètre :</strong> ${echantillon.parametre}<br>
+                        <strong>Valeur :</strong> ${echantillon.valeur} ${echantillon.unite}<br>
+                        <strong>Type :</strong> ${echantillon.type}<br>
+                        <strong>Libellé :</strong> ${echantillon.libelle || 'Non spécifié'}<br>
+                        <strong>Date :</strong> ${formaterDate(echantillon.date)}<br>
+                        <strong>Coordonnées :</strong> ${echantillon.latitude.toFixed(6)}, ${echantillon.longitude.toFixed(6)}
+                    </div>
+            `;
+            
+            if (alertes.length > 0) {
+                details += '<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;"><h4>⚠️ Alertes détectées :</h4>';
+                alertes.forEach(alerte => {
+                    details += `<div style="margin: 5px 0;">• ${alerte.norme}: ${alerte.valeur} > ${alerte.seuil} ${alerte.unite} (${alerte.gravite})</div>`;
+                });
+                details += '</div>';
+            }
+            
+            if (!resultats.error) {
+                details += '<div style="background: #e9ecef; padding: 15px; border-radius: 5px; margin: 15px 0;"><h4>📋 Comparaison aux normes :</h4>';
+                Object.keys(resultats).forEach(norme => {
+                    const resultat = resultats[norme];
+                    const statut = resultat.depassement ? '🔴 Dépassement' : '✅ Conforme';
+                    details += `<div style="margin: 5px 0;">• ${norme}: ${statut} (seuil: ${resultat.seuil} ${echantillon.unite})</div>`;
+                });
+                details += '</div>';
+            }
+            
+            details += `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="btn btn-secondary">Fermer</button>
+                    </div>
+                </div>
+            `;
+            
+            // Créer une overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            overlay.innerHTML = details;
+            document.body.appendChild(overlay);
+            
+            // Fermer en cliquant sur l'overlay
+            overlay.onclick = function(e) {
+                if (e.target === overlay) {
+                    overlay.remove();
+                }
+            };
+        }
+
+        // Fonctions d'import
+        function ouvrirImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        function fermerImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('importResults').style.display = 'none';
+            document.getElementById('csvFile').value = '';
+            document.getElementById('jsonFile').value = '';
+            document.getElementById('jsonText').value = '';
+        }
+
+        function importerCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                
+                const echantillons = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim()) {
+                        const values = lines[i].split(',').map(v => v.trim());
+                        const echantillon = {};
+                        headers.forEach((header, index) => {
+                            echantillon[header] = values[index] || '';
+                        });
+                        echantillons.push(echantillon);
+                    }
+                }
+                
+                document.getElementById('csvInfo').innerHTML = `<p style="color: #28a745;">✅ ${echantillons.length} échantillons détectés</p>`;
+                traiterImport(echantillons);
+            };
+            reader.readAsText(file);
+        }
+
+        function importerJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const echantillons = JSON.parse(e.target.result);
+                    document.getElementById('jsonInfo').innerHTML = `<p style="color: #28a745;">✅ ${echantillons.length} échantillons détectés</p>`;
+                    traiterImport(echantillons);
+                } catch (error) {
+                    document.getElementById('jsonInfo').innerHTML = `<p style="color: #dc3545;">❌ Erreur de format JSON</p>`;
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function importerJSONText() {
+            const jsonText = document.getElementById('jsonText').value;
+            if (!jsonText.trim()) return;
+
+            try {
+                const echantillons = JSON.parse(jsonText);
+                traiterImport(echantillons);
+            } catch (error) {
+                document.getElementById('jsonText').style.borderColor = '#dc3545';
+                alert('Erreur de format JSON');
+            }
+        }
+
+        function traiterImport(echantillons) {
+            let importes = 0;
+            let erreurs = 0;
+            const messagesErreur = [];
+
+            echantillons.forEach((echantillon, index) => {
+                try {
+                    // Validation des champs obligatoires
+                    if (!echantillon.parametre || !echantillon.valeur || !echantillon.latitude || !echantillon.longitude) {
+                        throw new Error('Champs obligatoires manquants');
+                    }
+
+                    // Conversion des types
+                    echantillon.valeur = parseFloat(echantillon.valeur);
+                    echantillon.latitude = parseFloat(echantillon.latitude);
+                    echantillon.longitude = parseFloat(echantillon.longitude);
+
+                    if (isNaN(echantillon.valeur) || isNaN(echantillon.latitude) || isNaN(echantillon.longitude)) {
+                        throw new Error('Valeurs numériques invalides');
+                    }
+
+                    // Ajouter l'échantillon
+                    const resultat = ajouterEchantillon(echantillon);
+                    if (resultat.success) {
+                        importes++;
+                    } else {
+                        throw new Error(resultat.error);
+                    }
+                } catch (error) {
+                    erreurs++;
+                    messagesErreur.push(`Ligne ${index + 1}: ${error.message}`);
+                }
+            });
+
+            // Afficher les résultats
+            document.getElementById('importResults').style.display = 'block';
+            document.getElementById('importStats').innerHTML = `
+                <div style="background: #d4edda; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                    <strong>✅ ${importes} échantillons importés avec succès</strong>
+                </div>
+            `;
+
+            if (erreurs > 0) {
+                document.getElementById('importErrors').innerHTML = `
+                    <div style="background: #f8d7da; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                        <strong>❌ ${erreurs} erreurs détectées :</strong>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                            ${messagesErreur.map(msg => `<li>${msg}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Recharger les données
+            if (importes > 0) {
+                chargerStatistiques();
+                chargerToutesMesures();
+                chargerDernieresAlertes();
+            }
+        }
+    </script>
+
+    <style>
+        .feature-card, .type-card, .norme-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #1e3c72;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover, .type-card:hover, .norme-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .feature-card h3, .type-card h3, .norme-card h4 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+        
+        .intro-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #495057;
+            margin-bottom: 2rem;
+        }
+    </style>
+</body>
+</html>
