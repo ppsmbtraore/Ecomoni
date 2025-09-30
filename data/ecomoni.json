@@ -154,9 +154,9 @@
     "latitude": 14.716677,
     "longitude": -17.467686,
     "commentaires": "",
-    "id": "1759249603197",
-    "date": "2025-09-30T16:26:43.197Z",
-    "timestamp": 1759249603197
+    "id": "1759249601939",
+    "date": "2025-09-30T16:26:41.939Z",
+    "timestamp": 1759249601939
   },
   {
     "parametre": "Plomb (sol)",
@@ -167,8 +167,21 @@
     "latitude": 14.716677,
     "longitude": -17.467686,
     "commentaires": "",
-    "id": "1759249604723",
-    "date": "2025-09-30T16:26:44.723Z",
-    "timestamp": 1759249604723
+    "id": "1759249603478",
+    "date": "2025-09-30T16:26:43.478Z",
+    "timestamp": 1759249603478
+  },
+  {
+    "parametre": "Plomb (sol)",
+    "valeur": "11",
+    "unite": "mg/kg",
+    "type": "Sol",
+    "libelle": "1",
+    "latitude": 14.716677,
+    "longitude": -17.467686,
+    "commentaires": "",
+    "id": "1759249603792",
+    "date": "2025-09-30T16:26:43.792Z",
+    "timestamp": 1759249603792
   }
 ]
