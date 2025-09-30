@@ -76,9 +76,9 @@
     "latitude": 14.64657,
     "longitude": -16.254471,
     "commentaires": "1",
-    "id": "1759249154098",
-    "date": "2025-09-30T16:19:14.098Z",
-    "timestamp": 1759249154098
+    "id": "1759249153706",
+    "date": "2025-09-30T16:19:13.707Z",
+    "timestamp": 1759249153707
   },
   {
     "parametre": "Plomb",
@@ -89,8 +89,21 @@
     "latitude": 14.64657,
     "longitude": -16.254471,
     "commentaires": "1",
-    "id": "1759249155342",
-    "date": "2025-09-30T16:19:15.342Z",
-    "timestamp": 1759249155342
+    "id": "1759249155094",
+    "date": "2025-09-30T16:19:15.094Z",
+    "timestamp": 1759249155094
+  },
+  {
+    "parametre": "Plomb",
+    "valeur": "19",
+    "unite": "mg/L",
+    "type": "Eau",
+    "libelle": "1",
+    "latitude": 14.64657,
+    "longitude": -16.254471,
+    "commentaires": "1",
+    "id": "1759249155708",
+    "date": "2025-09-30T16:19:15.708Z",
+    "timestamp": 1759249155708
   }
 ]
