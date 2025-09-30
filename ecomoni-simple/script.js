@@ -103,18 +103,69 @@ function ajouterEchantillon(sample) {
     
     return { success: true, message: 'Échantillon ajouté avec succès' };
   } catch (error) {
-    return { success: false, message: error.message };
+    const msg = (error && error.message) ? error.message : "Enregistrement impossible. Vérifiez l'API / les variables Netlify.";
+    return { success: false, message: msg };
   }
 }
 
 function chargerEchantillons() {
-  try {
-    const echantillons = localStorage.getItem('ecomoni_echantillons');
-    return echantillons ? JSON.parse(echantillons) : [];
-  } catch (error) {
-    console.error('Erreur lors du chargement des échantillons:', error);
-    return [];
+  // Lecture forcée sur GitHub si REQUIRE_REMOTE
+  if (REQUIRE_REMOTE) {
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', REMOTE_ENDPOINT, false);
+      xhr.send();
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const json = JSON.parse(xhr.responseText || '{}');
+        const data = Array.isArray(json.data) ? json.data : [];
+        localStorage.setItem('ecomoni_echantillons', JSON.stringify(data));
+        return data;
+      }
+      throw new Error('API distante indisponible');
+    } catch (e) {
+      // En mode strict, on ne retourne rien si l’API échoue
+      console.error('Lecture distante échouée:', e);
+      return [];
+    }
+  } else {
+    try {
+      const echantillons = localStorage.getItem('ecomoni_echantillons');
+      return echantillons ? JSON.parse(echantillons) : [];
+    } catch (error) {
+      console.error('Erreur lors du chargement des échantillons:', error);
+      return [];
+    }
   }
+}
+
+// Recalcule les alertes à partir des échantillons (sans persister en local)
+function calculerAlertesDepuisEchantillons(echantillons) {
+  const alertes = [];
+  echantillons.forEach(sample => {
+    const standards = getStandardsForParameter(sample.parametre);
+    if (!standards) return;
+    Object.keys(standards.sources).forEach(norme => {
+      const seuil = standards.sources[norme];
+      const valeur = parseFloat(sample.valeur);
+      if (valeur > seuil) {
+        const gravite = determinerGravite(valeur, seuil);
+        alertes.push({
+          id: `${sample.id || (sample.timestamp || Date.now())}_${norme}`,
+          echantillonId: sample.id,
+          parametre: sample.parametre,
+          valeur: sample.valeur,
+          unite: sample.unite,
+          norme: norme,
+          seuil: seuil,
+          date: sample.date,
+          gravite: gravite,
+          latitude: sample.latitude,
+          longitude: sample.longitude
+        });
+      }
+    });
+  });
+  return alertes;
 }
 
 function filtrerEchantillons(type, parametre, dateRange) {
@@ -191,13 +242,58 @@ function determinerGravite(valeur, seuil) {
 }
 
 function chargerAlertes() {
-  try {
-    const alertes = localStorage.getItem('ecomoni_alertes');
-    return alertes ? JSON.parse(alertes) : [];
-  } catch (error) {
-    console.error('Erreur lors du chargement des alertes:', error);
-    return [];
+  // Toujours baser les alertes sur l’état courant des échantillons (GitHub)
+  const echantillons = chargerEchantillons();
+  return calculerAlertesDepuisEchantillons(echantillons);
+}
+
+// Export Excel pour les alertes
+function exporterAlertesExcel() {
+  const alertes = chargerAlertes();
+  if (alertes.length === 0) {
+    alert('Aucune alerte à exporter');
+    return;
   }
+  let html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <style>
+        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #1e3c72; color: white; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <h1>⚠️ Alertes EcoMonitoring</h1>
+      <table>
+        <tr>
+          <th>Paramètre</th>
+          <th>Valeur</th>
+          <th>Unité</th>
+          <th>Norme</th>
+          <th>Seuil</th>
+          <th>Gravité</th>
+          <th>Date</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+        </tr>`;
+  alertes.forEach(a => {
+    html += `
+      <tr>
+        <td>${a.parametre}</td>
+        <td>${a.valeur}</td>
+        <td>${a.unite}</td>
+        <td>${a.norme}</td>
+        <td>${a.seuil}</td>
+        <td>${a.gravite}</td>
+        <td>${formaterDate(a.date)}</td>
+        <td>${a.latitude}</td>
+        <td>${a.longitude}</td>
+      </tr>`;
+  });
+  html += `</table></body></html>`;
+  telechargerFichier(html, `alertes_rapport_${new Date().toISOString().split('T')[0]}.xls`, 'application/vnd.ms-excel');
 }
 
 function filtrerAlertes(parametre, gravite, norme) {

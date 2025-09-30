@@ -69,6 +69,7 @@
                         <label>Export :</label>
                         <button onclick="exporterAlertes('csv')" class="btn btn-small btn-success">📤 CSV</button>
                         <button onclick="exporterAlertes('json')" class="btn btn-small btn-success">📤 JSON</button>
+                    <button onclick="exporterAlertesExcel()" class="btn btn-small btn-success">📊 Excel</button>
                     </div>
                 </div>
             </div>
@@ -147,6 +148,7 @@
         // Initialiser la page au chargement
         document.addEventListener('DOMContentLoaded', function() {
             initialiserFiltres();
+            // Toujours charger à partir de GitHub via script.js
             chargerAlertes();
             initialiserMenuMobile();
         });
