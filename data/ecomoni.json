@@ -9,5 +9,126 @@
     "id": "1759247841871",
     "date": "2025-09-30T15:57:21.871Z",
     "timestamp": 1759247841871
+  },
+  {
+    "parametre": "PM2.5",
+    "valeur": "20",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.6928,
+    "longitude": -17.4467,
+    "id": "1759247841873",
+    "date": "2025-09-30T15:57:21.873Z",
+    "timestamp": 1759247841873
+  },
+  {
+    "parametre": "Bruit (jour résidentiel)",
+    "valeur": "50",
+    "unite": "dB(A)",
+    "type": "Bruit",
+    "latitude": 14.6928,
+    "longitude": -17.4467,
+    "id": "1759247841873",
+    "date": "2025-09-30T15:57:21.873Z",
+    "timestamp": 1759247841873
+  },
+  {
+    "parametre": "Arsenic",
+    "valeur": "0.012",
+    "unite": "mg/L",
+    "type": "Eau",
+    "latitude": 14.7,
+    "longitude": -17.45,
+    "id": "1759247841874",
+    "date": "2025-09-30T15:57:21.874Z",
+    "timestamp": 1759247841874
+  },
+  {
+    "parametre": "PM2.5",
+    "valeur": "35",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.7,
+    "longitude": -17.45,
+    "id": "1759247841874",
+    "date": "2025-09-30T15:57:21.874Z",
+    "timestamp": 1759247841874
+  },
+  {
+    "parametre": "Plomb",
+    "valeur": "0.012",
+    "unite": "mg/L",
+    "type": "Eau",
+    "latitude": 14.7,
+    "longitude": -17.45,
+    "id": "1759247841875",
+    "date": "2025-09-30T15:57:21.875Z",
+    "timestamp": 1759247841875
+  },
+  {
+    "parametre": "Arsenic",
+    "valeur": "0.025",
+    "unite": "mg/L",
+    "type": "Eau",
+    "latitude": 14.68,
+    "longitude": -17.43,
+    "id": "1759247841875",
+    "date": "2025-09-30T15:57:21.875Z",
+    "timestamp": 1759247841875
+  },
+  {
+    "parametre": "PM2.5",
+    "valeur": "60",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.68,
+    "longitude": -17.43,
+    "id": "1759247841876",
+    "date": "2025-09-30T15:57:21.876Z",
+    "timestamp": 1759247841876
+  },
+  {
+    "parametre": "Mercure",
+    "valeur": "0.010",
+    "unite": "mg/L",
+    "type": "Eau",
+    "latitude": 14.68,
+    "longitude": -17.43,
+    "id": "1759247841892",
+    "date": "2025-09-30T15:57:21.892Z",
+    "timestamp": 1759247841892
+  },
+  {
+    "parametre": "Bruit (jour résidentiel)",
+    "valeur": "75",
+    "unite": "dB(A)",
+    "type": "Bruit",
+    "latitude": 14.68,
+    "longitude": -17.43,
+    "id": "1759247841893",
+    "date": "2025-09-30T15:57:21.893Z",
+    "timestamp": 1759247841893
+  },
+  {
+    "parametre": "Arsenic",
+    "valeur": "0.009",
+    "unite": "mg/L",
+    "type": "Eau",
+    "latitude": 14.67,
+    "longitude": -17.44,
+    "id": "1759247841893",
+    "date": "2025-09-30T15:57:21.893Z",
+    "timestamp": 1759247841893
+  },
+  {
+    "parametre": "PM10",
+    "valeur": "45",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.67,
+    "longitude": -17.44,
+    "id": "1759247841894",
+    "date": "2025-09-30T15:57:21.894Z",
+    "timestamp": 1759247841894
   }
 ]
