@@ -140,8 +140,21 @@
     "latitude": 14.64657,
     "longitude": -16.254471,
     "commentaires": "Zone rural",
-    "id": "1759247885669",
-    "date": "2025-09-30T15:58:05.669Z",
-    "timestamp": 1759247885669
+    "id": "1759247884737",
+    "date": "2025-09-30T15:58:04.737Z",
+    "timestamp": 1759247884737
+  },
+  {
+    "parametre": "Arsenic (sol)",
+    "valeur": "10",
+    "unite": "mg/kg",
+    "type": "Sol",
+    "libelle": "Dbl1",
+    "latitude": 14.64657,
+    "longitude": -16.254471,
+    "commentaires": "Zone rural",
+    "id": "1759247886612",
+    "date": "2025-09-30T15:58:06.612Z",
+    "timestamp": 1759247886612
   }
 ]
