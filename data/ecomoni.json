@@ -9,5 +9,49 @@
     "id": "1759248134421",
     "date": "2025-09-30T16:02:14.421Z",
     "timestamp": 1759248134421
+  },
+  {
+    "parametre": "PM2.5",
+    "valeur": "20",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.6928,
+    "longitude": -17.4467,
+    "id": "1759248134424",
+    "date": "2025-09-30T16:02:14.424Z",
+    "timestamp": 1759248134424
+  },
+  {
+    "parametre": "Bruit (jour résidentiel)",
+    "valeur": "50",
+    "unite": "dB(A)",
+    "type": "Bruit",
+    "latitude": 14.6928,
+    "longitude": -17.4467,
+    "id": "1759248134425",
+    "date": "2025-09-30T16:02:14.425Z",
+    "timestamp": 1759248134425
+  },
+  {
+    "parametre": "Arsenic",
+    "valeur": "0.012",
+    "unite": "mg/L",
+    "type": "Eau",
+    "latitude": 14.7,
+    "longitude": -17.45,
+    "id": "1759248134425",
+    "date": "2025-09-30T16:02:14.425Z",
+    "timestamp": 1759248134425
+  },
+  {
+    "parametre": "PM2.5",
+    "valeur": "35",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.7,
+    "longitude": -17.45,
+    "id": "1759248134441",
+    "date": "2025-09-30T16:02:14.441Z",
+    "timestamp": 1759248134441
   }
 ]
