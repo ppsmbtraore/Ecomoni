@@ -214,6 +214,7 @@
                             <tr>
                                 <th>Paramètre</th>
                                 <th>Valeur</th>
+                                <th>Libellé</th>
                                 <th>Norme</th>
                                 <th>Seuil</th>
                                 <th>Gravité</th>
@@ -224,15 +225,19 @@
                         <tbody>
             `;
             
+            const echantillonsAll = (window.chargerEchantillons ? window.chargerEchantillons() : []);
             alertesFiltrees.forEach(alerte => {
                 const icone = obtenirIconeGravite(alerte.gravite);
                 const classe = alerte.gravite;
                 const ratio = (parseFloat(alerte.valeur) / parseFloat(alerte.seuil)).toFixed(2);
+                const echantillon = echantillonsAll.find(e => e.id === alerte.echantillonId) || {};
+                const libelle = echantillon.libelle || '';
                 
                 html += `
                     <tr class="${classe}">
                         <td>${alerte.parametre}</td>
                         <td>${alerte.valeur} ${alerte.unite}</td>
+                        <td>${libelle}</td>
                         <td>${alerte.norme}</td>
                         <td>${alerte.seuil} ${alerte.unite}</td>
                         <td>
@@ -354,20 +359,44 @@
         function voirDetails(alerteId) {
             const alerte = alertesFiltrees.find(a => a.id === alerteId);
             if (!alerte) return;
-            
+            const echantillonsAll = (window.chargerEchantillons ? window.chargerEchantillons() : []);
+            const echantillon = echantillonsAll.find(e => e.id === alerte.echantillonId) || {};
+            const libelle = echantillon.libelle || '';
+            const description = echantillon.description || '';
+            const ratioTxt = (parseFloat(alerte.valeur) / parseFloat(alerte.seuil)).toFixed(2) + 'x';
+
             const details = `
-                <h3>Détails de l'Alerte</h3>
-                <p><strong>Paramètre:</strong> ${alerte.parametre}</p>
-                <p><strong>Valeur mesurée:</strong> ${alerte.valeur} ${alerte.unite}</p>
-                <p><strong>Norme:</strong> ${alerte.norme}</p>
-                <p><strong>Seuil:</strong> ${alerte.seuil} ${alerte.unite}</p>
-                <p><strong>Gravité:</strong> ${obtenirIconeGravite(alerte.gravite)} ${alerte.gravite}</p>
-                <p><strong>Ratio:</strong> ${(parseFloat(alerte.valeur) / parseFloat(alerte.seuil)).toFixed(2)}x</p>
-                <p><strong>Date:</strong> ${formaterDate(alerte.date)}</p>
-                <p><strong>Coordonnées:</strong> ${alerte.latitude}, ${alerte.longitude}</p>
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 520px; margin: 20px auto;">
+                    <h3 style="color: #1e3c72; margin-bottom: 15px;">⚠️ Détails de l'alerte</h3>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Paramètre:</strong> ${alerte.parametre}<br>
+                        <strong>Valeur mesurée:</strong> ${alerte.valeur} ${alerte.unite}<br>
+                        <strong>Norme:</strong> ${alerte.norme}<br>
+                        <strong>Seuil:</strong> ${alerte.seuil} ${alerte.unite}<br>
+                        <strong>Gravité:</strong> ${obtenirIconeGravite(alerte.gravite)} ${alerte.gravite} (${ratioTxt})<br>
+                        <strong>Date:</strong> ${formaterDate(alerte.date)}
+                    </div>
+                    <div style="margin-bottom: 10px; background:#f8f9fa; padding:10px; border-radius:6px;">
+                        <strong>Libellé:</strong> ${libelle || '—'}<br>
+                        <strong>Description:</strong> ${description || '—'}
+                    </div>
+                    <div style="font-size: 13px; color:#6c757d;">
+                        <strong>Coordonnées:</strong> ${alerte.latitude}, ${alerte.longitude}
+                    </div>
+                    <div style="text-align:center; margin-top: 16px;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="btn btn-secondary">Fermer</button>
+                    </div>
+                </div>
             `;
-            
-            alert(details);
+
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 1000; display:flex; align-items:center; justify-content:center;
+            `;
+            overlay.innerHTML = details;
+            document.body.appendChild(overlay);
+            overlay.onclick = function(e){ if(e.target===overlay){ overlay.remove(); } };
         }
 
         function localiserAlerte(alerteId) {
