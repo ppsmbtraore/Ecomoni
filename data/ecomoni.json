@@ -76,5 +76,18 @@
     "id": "1759247489340",
     "date": "2025-09-30T15:51:29.340Z",
     "timestamp": 1759247489340
+  },
+  {
+    "parametre": "Arsenic (sol)",
+    "valeur": "100",
+    "unite": "mg/kg",
+    "type": "Sol",
+    "libelle": "Dbl1",
+    "latitude": 14.64657,
+    "longitude": -16.254471,
+    "commentaires": "Zone rural",
+    "id": "1759247495585",
+    "date": "2025-09-30T15:51:35.585Z",
+    "timestamp": 1759247495585
   }
 ]
