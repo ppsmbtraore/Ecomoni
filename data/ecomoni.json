@@ -9,5 +9,27 @@
     "id": "1759247818682",
     "date": "2025-09-30T15:56:58.682Z",
     "timestamp": 1759247818682
+  },
+  {
+    "parametre": "PM2.5",
+    "valeur": "20",
+    "unite": "µg/m³",
+    "type": "Air",
+    "latitude": 14.6928,
+    "longitude": -17.4467,
+    "id": "1759247818683",
+    "date": "2025-09-30T15:56:58.683Z",
+    "timestamp": 1759247818683
+  },
+  {
+    "parametre": "Bruit (jour résidentiel)",
+    "valeur": "50",
+    "unite": "dB(A)",
+    "type": "Bruit",
+    "latitude": 14.6928,
+    "longitude": -17.4467,
+    "id": "1759247818684",
+    "date": "2025-09-30T15:56:58.684Z",
+    "timestamp": 1759247818684
   }
 ]
