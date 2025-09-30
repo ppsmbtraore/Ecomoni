@@ -5,23 +5,42 @@
 const REMOTE_ENDPOINT = '/api/github-db';
 let useRemoteStore = true; // bascule automatique après test
 
-async function initRemoteStore() {
+function initRemoteStore() {
+  // Teste l'endpoint et remplit le cache local en arrière-plan
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), 3500);
+  fetch(REMOTE_ENDPOINT, { method: 'GET', signal: ctrl.signal })
+    .then(res => {
+      clearTimeout(id);
+      if (!res.ok) throw new Error('endpoint indisponible');
+      useRemoteStore = true;
+      return res.json();
+    })
+    .then(json => {
+      const data = Array.isArray(json?.data) ? json.data : [];
+      if (data.length) {
+        localStorage.setItem('ecomoni_echantillons', JSON.stringify(data));
+      }
+    })
+    .catch(() => {
+      useRemoteStore = false;
+    });
+}
+
+function syncRemoteEchantillons(echantillons) {
+  if (!useRemoteStore) return;
   try {
-    const ctrl = new AbortController();
-    const id = setTimeout(() => ctrl.abort(), 3500);
-    const res = await fetch(REMOTE_ENDPOINT, { method: 'GET', signal: ctrl.signal });
-    clearTimeout(id);
-    if (!res.ok) throw new Error('endpoint indisponible');
-    // Endpoint disponible → on restera en mode distant
-    useRemoteStore = true;
-  } catch (_) {
-    useRemoteStore = false;
-  }
+    fetch(REMOTE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(echantillons)
+    }).catch(() => {});
+  } catch (_) {}
 }
 
 // ===== GESTION DES ÉCHANTILLONS =====
 
-async function ajouterEchantillon(sample) {
+function ajouterEchantillon(sample) {
   try {
     // Validation des données
     if (!sample.parametre || !sample.valeur || !sample.unite || !sample.latitude || !sample.longitude) {
@@ -34,26 +53,14 @@ async function ajouterEchantillon(sample) {
     sample.timestamp = Date.now();
 
     // Récupérer les échantillons existants
-    let echantillons = await chargerEchantillons();
+    let echantillons = chargerEchantillons();
     
     // Ajouter le nouvel échantillon
     echantillons.push(sample);
     
-    // Sauvegarder
-    if (useRemoteStore) {
-      try {
-        await fetch(REMOTE_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(echantillons)
-        });
-      } catch (e) {
-        // Fallback local si POST échoue
-        localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
-      }
-    } else {
-      localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
-    }
+    // Sauvegarder local et synchroniser à distance en arrière-plan
+    localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
+    syncRemoteEchantillons(echantillons);
     
     // Générer les alertes si nécessaire
     genererAlertesPourEchantillon(sample);
@@ -64,27 +71,7 @@ async function ajouterEchantillon(sample) {
   }
 }
 
-async function chargerEchantillons() {
-  if (useRemoteStore) {
-    try {
-      const res = await fetch(REMOTE_ENDPOINT, { method: 'GET' });
-      if (res.ok) {
-        const json = await res.json();
-        const data = Array.isArray(json.data) ? json.data : [];
-        // Cache local
-        localStorage.setItem('ecomoni_echantillons', JSON.stringify(data));
-        // S'assurer que les alertes existent au besoin
-        const alertes = localStorage.getItem('ecomoni_alertes');
-        if (!alertes) {
-          data.forEach(s => genererAlertesPourEchantillon(s));
-        }
-        return data;
-      }
-    } catch (_) {
-      // bascule locale si échec
-      useRemoteStore = false;
-    }
-  }
+function chargerEchantillons() {
   try {
     const echantillons = localStorage.getItem('ecomoni_echantillons');
     return echantillons ? JSON.parse(echantillons) : [];
