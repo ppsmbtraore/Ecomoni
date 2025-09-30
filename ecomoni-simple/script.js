@@ -4,6 +4,7 @@
 
 const REMOTE_ENDPOINT = '/api/github-db';
 let useRemoteStore = true; // bascule automatique après test
+const REQUIRE_REMOTE = true; // impose GitHub comme source unique (pas d'écriture locale)
 
 function initRemoteStore() {
   // Teste l'endpoint et remplit le cache local en arrière-plan
@@ -38,6 +39,16 @@ function syncRemoteEchantillons(echantillons) {
   } catch (_) {}
 }
 
+// Réactive la synchronisation distante au chargement
+document.addEventListener('DOMContentLoaded', function () {
+  try { initRemoteStore(); } catch (_) {}
+});
+
+// Ré-synchronise régulièrement (toutes les 60s)
+try {
+  setInterval(() => { try { initRemoteStore(); } catch (_) {} }, 60000);
+} catch (_) {}
+
 // ===== GESTION DES ÉCHANTILLONS =====
 
 function ajouterEchantillon(sample) {
@@ -58,9 +69,34 @@ function ajouterEchantillon(sample) {
     // Ajouter le nouvel échantillon
     echantillons.push(sample);
     
-    // Sauvegarder local et synchroniser à distance en arrière-plan
-    localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
-    syncRemoteEchantillons(echantillons);
+    // Écriture: priorité au distant pour garantir la même base pour tous
+    if (useRemoteStore) {
+      try {
+        // tente le POST synchronisant l'ensemble
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', REMOTE_ENDPOINT, false); // synchro pour garantir le résultat
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(echantillons));
+        if (xhr.status < 200 || xhr.status >= 300) {
+          if (REQUIRE_REMOTE) throw new Error('API distante indisponible');
+          // fallback local autorisé seulement si REQUIRE_REMOTE = false
+          localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
+        } else {
+          // succès → met à jour cache local
+          localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
+        }
+      } catch (e) {
+        if (REQUIRE_REMOTE) throw e;
+        localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
+      }
+    } else {
+      if (REQUIRE_REMOTE) {
+        throw new Error('API distante non configurée');
+      }
+      // mode local autorisé seulement si REQUIRE_REMOTE = false
+      localStorage.setItem('ecomoni_echantillons', JSON.stringify(echantillons));
+      syncRemoteEchantillons(echantillons);
+    }
     
     // Générer les alertes si nécessaire
     genererAlertesPourEchantillon(sample);
@@ -305,6 +341,7 @@ function exporterExcel(echantillons, nomFichier) {
           <th>Unité</th>
           <th>Type</th>
           <th>Libellé</th>
+          <th>Description</th>
           <th>Date</th>
           <th>Latitude</th>
           <th>Longitude</th>
@@ -346,6 +383,7 @@ function exporterExcel(echantillons, nomFichier) {
         <td>${echantillon.unite}</td>
         <td>${echantillon.type}</td>
         <td>${echantillon.libelle || 'Non spécifié'}</td>
+        <td>${echantillon.description || ''}</td>
         <td>${formaterDate(echantillon.date)}</td>
         <td>${echantillon.latitude}</td>
         <td>${echantillon.longitude}</td>
@@ -697,8 +735,9 @@ function filtrerCarte() {
 
 function getAllTypes() {
   const echantillons = chargerEchantillons();
-  const types = [...new Set(echantillons.map(e => e.type))];
-  return types;
+  const builtin = ['Eau', 'Air', 'Sol', 'Déchets', 'Bruit'];
+  const fromData = [...new Set(echantillons.map(e => e.type).filter(Boolean))];
+  return [...new Set([...builtin, ...fromData])];
 }
 
 function initialiserCarte() {
