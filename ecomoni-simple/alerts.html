@@ -149,7 +149,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initialiserFiltres();
             // Toujours charger à partir de GitHub via script.js
-            chargerAlertes();
+            chargerAlertesPage();
             initialiserMenuMobile();
         });
 
@@ -182,12 +182,18 @@
             });
         }
 
-        function chargerAlertes() {
+        function chargerAlertesPage() {
             const parametre = document.getElementById('filter-parametre').value;
             const gravite = document.getElementById('filter-gravite').value;
             const norme = document.getElementById('filter-norme').value;
-            
-            alertesFiltrees = filtrerAlertes(parametre, gravite, norme);
+
+            const toutes = (window.chargerAlertes ? window.chargerAlertes() : []);
+            alertesFiltrees = toutes.filter(a => {
+                if (parametre && parametre !== 'Tous' && a.parametre !== parametre) return false;
+                if (gravite && gravite !== 'Toutes' && a.gravite !== gravite) return false;
+                if (norme && norme !== 'Toutes' && a.norme !== norme) return false;
+                return true;
+            });
             afficherAlertes();
             mettreAJourStatistiques();
             genererGraphiques();
@@ -342,7 +348,7 @@
             document.getElementById('filter-parametre').value = 'Tous';
             document.getElementById('filter-gravite').value = 'Toutes';
             document.getElementById('filter-norme').value = 'Toutes';
-            chargerAlertes();
+            chargerAlertesPage();
         }
 
         function voirDetails(alerteId) {
@@ -381,22 +387,19 @@
 
         function supprimerAlertesAnciennes() {
             if (confirm('Supprimer les alertes de plus de 30 jours ?')) {
+                // Les alertes sont dérivées des échantillons GitHub. Aucune suppression persistante locale.
                 const dateLimite = new Date();
                 dateLimite.setDate(dateLimite.getDate() - 30);
-                
-                let toutesAlertes = chargerAlertes();
-                const alertesRecentes = toutesAlertes.filter(a => new Date(a.date) > dateLimite);
-                
-                localStorage.setItem('ecomoni_alertes', JSON.stringify(alertesRecentes));
-                
-                alert(`${toutesAlertes.length - alertesRecentes.length} alertes anciennes supprimées.`);
-                chargerAlertes();
+                const toutes = (window.chargerAlertes ? window.chargerAlertes() : []);
+                const anciennes = toutes.filter(a => new Date(a.date) <= dateLimite).length;
+                alert(`${anciennes} alertes anciennes (virtuellement) filtrées. Aucune suppression côté source.`);
+                chargerAlertesPage();
             }
         }
 
         // Fonction pour filtrer les alertes (utilise la fonction du script.js)
         function filtrerAlertes() {
-            chargerAlertes();
+            chargerAlertesPage();
         }
     </script>
 </body>
