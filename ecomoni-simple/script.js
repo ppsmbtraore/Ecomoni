@@ -702,7 +702,7 @@ function creerPopupEchantillon(echantillon) {
     <div style="min-width: 320px; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.4;">
       <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px; margin: -10px -10px 15px -10px; border-radius: 8px 8px 0 0;">
         <h3 style="margin: 0 0 8px 0; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-          ${iconeGravite} ${echantillon.parametre}
+          ${iconeGravite} ${echantillon.parametre}${echantillon.libelle ? ` – ${echantillon.libelle}` : ''}
         </h3>
         <div style="font-size: 14px; opacity: 0.9;">
           <strong>Valeur mesurée:</strong> ${echantillon.valeur} ${echantillon.unite}
