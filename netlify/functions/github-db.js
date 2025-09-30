@@ -1,7 +1,5 @@
 'use strict';
 
-const fetch = require('node-fetch');
-
 // Env vars to set in Netlify: GITHUB_TOKEN, GITHUB_REPO, GITHUB_OWNER, GITHUB_BRANCH, GITHUB_PATH
 
 exports.handler = async function(event) {
