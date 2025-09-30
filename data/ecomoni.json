@@ -196,5 +196,18 @@
     "id": "1759252422798",
     "date": "2025-09-30T17:13:42.798Z",
     "timestamp": 1759252422798
+  },
+  {
+    "parametre": "Chrome (sol)",
+    "valeur": "11",
+    "unite": "mg/kg",
+    "type": "Sol",
+    "libelle": "3",
+    "latitude": 14.716677,
+    "longitude": -17.467686,
+    "commentaires": "",
+    "id": "1759252610087",
+    "date": "2025-09-30T17:16:50.087Z",
+    "timestamp": 1759252610087
   }
 ]
