@@ -109,7 +109,14 @@ function ajouterEchantillon(sample) {
 }
 
 function chargerEchantillons() {
-  // Lecture forcée sur GitHub si REQUIRE_REMOTE
+  // Mode strict: cache-first (rapide), puis refresh async via initRemoteStore()
+  try {
+    const cached = localStorage.getItem('ecomoni_echantillons');
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (_) {}
+
   if (REQUIRE_REMOTE) {
     try {
       const xhr = new XMLHttpRequest();
@@ -123,18 +130,17 @@ function chargerEchantillons() {
       }
       throw new Error('API distante indisponible');
     } catch (e) {
-      // En mode strict, on ne retourne rien si l’API échoue
       console.error('Lecture distante échouée:', e);
       return [];
     }
-  } else {
-    try {
-      const echantillons = localStorage.getItem('ecomoni_echantillons');
-      return echantillons ? JSON.parse(echantillons) : [];
-    } catch (error) {
-      console.error('Erreur lors du chargement des échantillons:', error);
-      return [];
-    }
+  }
+
+  try {
+    const echantillons = localStorage.getItem('ecomoni_echantillons');
+    return echantillons ? JSON.parse(echantillons) : [];
+  } catch (error) {
+    console.error('Erreur lors du chargement des échantillons:', error);
+    return [];
   }
 }
 
