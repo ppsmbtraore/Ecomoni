@@ -720,6 +720,15 @@ function creerPopupEchantillon(echantillon) {
             <div style="font-size: 14px;">${echantillon.type}</div>
           </div>
         </div>
+        <div style="margin-bottom: 12px;">
+          <div style="font-weight: 600; color: #495057; margin-bottom: 5px;">🏷️ Libellé</div>
+          <div style="font-size: 14px;">${(echantillon.libelle || '—')}</div>
+        </div>
+        ${echantillon.description ? `
+        <div style="margin-bottom: 12px;">
+          <div style="font-weight: 600; color: #495057; margin-bottom: 5px;">📝 Description</div>
+          <div style="font-size: 13px; color:#6c757d;">${echantillon.description}</div>
+        </div>` : ''}
         
         <div style="margin-bottom: 15px;">
           <div style="font-weight: 600; color: #495057; margin-bottom: 8px;">📍 Coordonnées</div>
