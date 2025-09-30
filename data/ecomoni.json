@@ -105,5 +105,18 @@
     "id": "1759249155708",
     "date": "2025-09-30T16:19:15.708Z",
     "timestamp": 1759249155708
+  },
+  {
+    "parametre": "Plomb",
+    "valeur": "19",
+    "unite": "mg/L",
+    "type": "Eau",
+    "libelle": "1",
+    "latitude": 14.64657,
+    "longitude": -16.254471,
+    "commentaires": "1",
+    "id": "1759249204534",
+    "date": "2025-09-30T16:20:04.534Z",
+    "timestamp": 1759249204534
   }
 ]
