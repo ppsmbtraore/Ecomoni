@@ -219,15 +219,17 @@
         function creerPopupEchantillon(echantillon) {
             const resultats = comparerAuxNormes(echantillon);
             const alertes = chargerAlertes().filter(a => a.echantillonId === echantillon.id);
+            const titre = `${echantillon.parametre}${echantillon.libelle ? ` – ${echantillon.libelle}` : ''}`;
             
             let html = `
                 <div style="min-width: 250px; font-family: Arial, sans-serif;">
-                    <h3 style="margin: 0 0 10px 0; color: #1e3c72;">${echantillon.parametre}</h3>
+                    <h3 style="margin: 0 0 10px 0; color: #1e3c72;">${titre}</h3>
                     <div style="margin-bottom: 10px;">
                         <strong>Valeur:</strong> ${echantillon.valeur} ${echantillon.unite}<br>
                         <strong>Type:</strong> ${echantillon.type}<br>
                         <strong>Date:</strong> ${formaterDate(echantillon.date)}
                     </div>
+                    ${echantillon.description ? `<div style="margin: 8px 0; font-size: 13px; color:#6c757d;">📝 ${echantillon.description}</div>` : ''}
             `;
             
             if (alertes.length > 0) {
