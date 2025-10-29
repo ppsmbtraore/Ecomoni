@@ -209,5 +209,18 @@
     "id": "1759252610087",
     "date": "2025-09-30T17:16:50.087Z",
     "timestamp": 1759252610087
+  },
+  {
+    "parametre": "Cadmium",
+    "valeur": "5",
+    "unite": "mg/L",
+    "type": "Eau",
+    "libelle": "Def",
+    "latitude": 14.66546,
+    "longitude": -16.226956,
+    "commentaires": "",
+    "id": "1761744423569",
+    "date": "2025-10-29T13:27:03.569Z",
+    "timestamp": 1761744423569
   }
 ]
